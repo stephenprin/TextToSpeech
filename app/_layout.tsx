@@ -1,29 +1,28 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Tabs } from "expo-router";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Tabs>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Text to Speech",
+          tabBarIcon: ({ size, color }) => (
+            <FontAwesome6 name="file-audio" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="speech-to-text"
+        options={{
+          title: "Speech to Text",
+          tabBarIcon: ({ size, color }) => (
+            <FontAwesome name="microphone" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

@@ -35,7 +35,8 @@ export default function AudioPlayer({ uri }: AudioPlayerProps) {
         marginTop: 20,
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        padding: 10,
+        gap: 20,
       }}
     >
       {isPlaying ? (

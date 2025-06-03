@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     color: "#f6f6f6",
-    minHeight: 150,
+    minHeight: 10,
   },
   button: {
     marginTop: 20,

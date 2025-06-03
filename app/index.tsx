@@ -1,3 +1,5 @@
+import arrayBufferToBase64 from "@/utils";
+import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -6,15 +8,29 @@ const Index = () => {
   const [text, setText] = useState("");
 
   const handleConvertToAudio = async () => {
-    const response = await fetch("http://localhost:8081/api/tts", {
-      method: "POST",
-      body: JSON.stringify({
-        text,
-      }),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch("http://localhost:8081/api/tts", {
+        method: "POST",
+        body: JSON.stringify({
+          text,
+        }),
+      });
+      if (!response) throw new Error("Failed to fetch audio");
+      const arrayBuffer = await response.arrayBuffer();
+      const base64Audio = arrayBufferToBase64(arrayBuffer);
 
-    setText(" ");
+      const fileUri =
+        FileSystem.documentDirectory + new Date().toISOString() + ".mp3";
+
+      await FileSystem.writeAsStringAsync(fileUri, base64Audio, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      console.log("Convert to audio", fileUri);
+
+      setText("");
+    } catch (error) {
+      console.error("Error converting to audio", error);
+    }
   };
   return (
     <View style={styles.container}>
@@ -65,7 +81,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     color: "#f6f6f6",
-    minHeight: 90,
+    minHeight: 100,
   },
   button: {
     marginTop: 20,

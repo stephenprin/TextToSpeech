@@ -4,10 +4,17 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 const Index = () => {
   const [text, setText] = useState("");
-  const handleConvertToAudio = () => {
 
-    console.log("Converting to audio:", text);
-  
+  const handleConvertToAudio = async () => {
+    const response = await fetch("http://localhost:8081/api/tts", {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+      }),
+    });
+    const data = await response.json();
+
+    setText(" ");
   };
   return (
     <View style={styles.container}>
@@ -47,14 +54,13 @@ const styles = StyleSheet.create({
   gradientBorder: {
     padding: 4,
     borderRadius: 12,
-    marginTop: 30,
+    marginTop: 20,
   },
   inputWrapper: {
     backgroundColor: "#2d2323",
     borderRadius: 8,
     minHeight: 100,
     padding: 10,
-    marginTop: 20,
   },
   input: {
     fontSize: 16,

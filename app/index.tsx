@@ -1,3 +1,4 @@
+import AudioPlayer from "@/components/AudioPlayer";
 import arrayBufferToBase64 from "@/utils";
 import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,6 +7,9 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 const Index = () => {
   const [text, setText] = useState("");
+  const [audioFileUri, setAudioFileUri] = useState<string | null>(
+    "file:///Users/prince/Library/Developer/CoreSimulator/Devices/F058CA94-DC32-4D35-AFCE-C326949106F5/data/Containers/Data/Application/F71793F4-930B-4F9A-94A3-E8BE9F3D9D5E/Documents/ExponentExperienceData/@anonymous/TextToSpeech-ab1aeadd-e9e1-4b0a-9285-a61a418a375d/2025-06-03T19:57:34.264Z.mp3"
+  );
 
   const handleConvertToAudio = async () => {
     try {
@@ -25,7 +29,8 @@ const Index = () => {
       await FileSystem.writeAsStringAsync(fileUri, base64Audio, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      console.log("Convert to audio", fileUri);
+
+      setAudioFileUri(fileUri);
 
       setText("");
     } catch (error) {
@@ -55,6 +60,7 @@ const Index = () => {
       <Pressable onPress={handleConvertToAudio} style={styles.button}>
         <Text style={styles.buttonText}>✨ Convert to Audio</Text>
       </Pressable>
+      {audioFileUri && <AudioPlayer uri={audioFileUri} />}
     </View>
   );
 };
@@ -81,7 +87,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     color: "#f6f6f6",
-    minHeight: 100,
+    minHeight: 150,
   },
   button: {
     marginTop: 20,

@@ -1,9 +1,10 @@
 import AudioPlayer from "@/components/AudioPlayer";
+import CustomButton from "@/components/CustomButton";
 import arrayBufferToBase64 from "@/utils";
 import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 const Index = () => {
   const [text, setText] = useState("");
@@ -57,9 +58,11 @@ const Index = () => {
         </View>
       </LinearGradient>
 
-      <Pressable onPress={handleConvertToAudio} style={styles.button}>
-        <Text style={styles.buttonText}>✨ Convert to Audio</Text>
-      </Pressable>
+      <CustomButton
+        title="✨ Convert to Audio"
+        onPress={handleConvertToAudio}
+      />
+
       {audioFileUri && <AudioPlayer uri={audioFileUri} />}
     </View>
   );
@@ -88,17 +91,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#f6f6f6",
     minHeight: 10,
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: "#6C4EFF",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
   },
 });

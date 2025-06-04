@@ -1,20 +1,24 @@
 import AudioPlayer from "@/components/AudioPlayer";
+import CustomButton from "@/components/CustomButton";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { AudioModule, RecordingPresets, useAudioRecorder } from "expo-audio";
+import * as FileSystem from "expo-file-system";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 const SpeechToText = () => {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [isRecording, setIsRecording] = useState(false);
   const [audioFileUri, setAudioFileUri] = useState<string | null>();
+  const [transcription, setTranscription] = useState<string>("");
 
   const handleStartRecord = async () => {
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();
     setIsRecording(true);
     setAudioFileUri("");
+    setTranscription("");
   };
 
   const stopRecording = async () => {
@@ -33,6 +37,37 @@ const SpeechToText = () => {
       }
     })();
   }, []);
+
+  const handleConvertToText = async () => {
+    if (!audioFileUri) {
+      Alert.alert("No audio file to convert");
+      return;
+    }
+    const base64Audio = await FileSystem.readAsStringAsync(audioFileUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    try {
+      const response = await fetch("http://localhost:8081/api/stt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ base64Audio }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Backend error:", errorText);
+        throw new Error("Failed to convert audio to text");
+      }
+      const text = await response.json();
+      console.log("Text", text);
+      setTranscription(text.transcription || "");
+    } catch (error) {
+      console.error("Error converting to text", error);
+      Alert.alert("Error", "Failed to convert audio to text");
+    }
+  };
+
   return (
     <LinearGradient colors={["#551a51", "#111342"]} style={styles.container}>
       {isRecording ? (
@@ -54,7 +89,17 @@ const SpeechToText = () => {
           </Pressable>
         </LinearGradient>
       )}
-      {audioFileUri && <AudioPlayer uri={audioFileUri} />}
+
+      {audioFileUri && (
+        <View>
+          <AudioPlayer uri={audioFileUri} />
+          <CustomButton title="Convert to Text" onPress={handleConvertToText} />
+        </View>
+      )}
+
+      {transcription && (
+        <Text style={{ color: "white" }}>{transcription.text}</Text>
+      )}
     </LinearGradient>
   );
 };

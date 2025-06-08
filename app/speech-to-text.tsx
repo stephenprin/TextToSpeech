@@ -12,6 +12,7 @@ const SpeechToText = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioFileUri, setAudioFileUri] = useState<string | null>();
   const [transcription, setTranscription] = useState<string>("");
+  const [playBackPosition, setPlayBackPosition] = useState<number>(0);
 
   const handleStartRecord = async () => {
     await audioRecorder.prepareToRecordAsync();
@@ -67,7 +68,6 @@ const SpeechToText = () => {
       Alert.alert("Error", "Failed to convert audio to text");
     }
   };
-
   return (
     <LinearGradient colors={["#551a51", "#111342"]} style={styles.container}>
       {isRecording ? (
@@ -92,13 +92,33 @@ const SpeechToText = () => {
 
       {audioFileUri && (
         <View>
-          <AudioPlayer uri={audioFileUri} />
+          <AudioPlayer
+            uri={audioFileUri}
+            onPlaybackPositionChange={setPlayBackPosition}
+          />
           <CustomButton title="Convert to Text" onPress={handleConvertToText} />
         </View>
       )}
 
       {transcription && (
-        <Text style={{ color: "white" }}>{transcription.text}</Text>
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ color: "white", padding: 10, lineHeight:30 }}>
+            {transcription.words.map((word, index) => (
+              <Text
+                key={index}
+                style={{
+                
+                  backgroundColor:
+                    playBackPosition > word.start && playBackPosition < word.end
+                      ? "#6a0b6a"
+                      : "transparent",
+                }}
+              >
+                {word.text + " "}
+              </Text>
+            ))}
+          </Text>
+        </View>
       )}
     </LinearGradient>
   );

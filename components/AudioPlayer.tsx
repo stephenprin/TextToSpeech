@@ -5,15 +5,23 @@ import { Pressable, View } from "react-native";
 
 type AudioPlayerProps = {
   uri: string;
+  onPlaybackPositionChange?: (progress: number) => void;
 };
 
-export default function AudioPlayer({ uri }: AudioPlayerProps) {
+export default function AudioPlayer({
+  uri,
+  onPlaybackPositionChange,
+}: AudioPlayerProps) {
   const player = useAudioPlayer({ uri });
   const status = useAudioPlayerStatus(player);
   const [playBackBarWidth, setPlayBackBarWidth] = useState<number>(0);
 
   const isPlaying = status.playing;
   const progress = status.currentTime / status.duration;
+
+  useEffect(() => {
+    onPlaybackPositionChange?.(status.currentTime);
+  }, [status.currentTime, onPlaybackPositionChange]);
 
   useEffect(() => {
     if (status.didJustFinish) {
@@ -35,7 +43,8 @@ export default function AudioPlayer({ uri }: AudioPlayerProps) {
         marginTop: 20,
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        padding: 10,
+        gap: 20,
       }}
     >
       {isPlaying ? (

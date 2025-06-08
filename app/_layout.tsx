@@ -17,7 +17,7 @@ export default function RootLayout() {
       <Tabs.Screen
         name="speech-to-text"
         options={{
-          title: "Speech to Text",
+          headerShown: false,
           tabBarIcon: ({ size, color }) => (
             <FontAwesome name="microphone" size={size} color={color} />
           ),
